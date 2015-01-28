@@ -56,18 +56,19 @@ malformed_heartbeat = request2bin('''
 
 def dump_hex(message_payload):
     
-    # Take each half_word_start_index in the message payload
-    for half_word_start_index in xrange(0, len(message_payload), 16):
+    # Take each start_index in the message payload
+    for start_index in xrange(0, len(message_payload), 16):
 
-        # Take every 16 bits
-        sixteen_bits = [half_word for half_word in message_payload[half_word_start_index: half_word_start_index + 16]]
+        # Take every 16 bytes
+        sixteen_bytes = [chunk for chunk in message_payload[start_index: start_index + 16]]
 
         # Add every byte into a space-delimited string
-        hex_representation = ' '.join('%02X' % ord(c) for c in sixteen_bits)
+        hex_representation = ' '.join('%02X' % ord(one_byte) for one_byte in sixteen_bytes)
 
         # Print out the ASCII representation if there is one
-        ASCII_representation = ''.join((c if 32 <= ord(c) <= 126 else '.')for c in sixteen_bits)
-        print '  %04x: %-48s %s' % (half_word_start_index, hex_representation, ASCII_representation)
+        ASCII_representation = ''.join((
+                            ASCII_letter if 32 <= ord(ASCII_letter) <= 126 else '.')for ASCII_letter in sixteen_bytes)
+        print '  %04x: %-48s %s' % (start_index, hex_representation, ASCII_representation)
 
     # Print newline at the end
     print
